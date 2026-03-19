@@ -13,15 +13,7 @@ const MEME_SCHEMA = {
     required: ['title', 'bullets', 'transitionText', 'closingLine'],
     additionalProperties: false,
     properties: {
-      title: {
-        type: 'object',
-        required: ['prefix', 'subject'],
-        additionalProperties: false,
-        properties: {
-          prefix: { type: 'string' },
-          subject: { type: 'string' },
-        },
-      },
+      title: { type: 'string' },
       bullets: { type: 'array', items: { type: 'string' } },
       transitionText: { type: 'string' },
       parenthetical: { type: 'string' },

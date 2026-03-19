@@ -91,19 +91,24 @@ That's it. No setup, no extra sentence. Just the punchline.
 
 Return ONLY valid JSON:
 {
-  "title": { "prefix": "STOP DOING", "subject": "TOPIC" },
-  "bullets": ["bullet 1", "bullet 2", "bullet 3", "bullet 4"],
-  "transitionText": "LOOK at what...",
-  "parenthetical": "**(This is REAL...)**:",
-  "imagePrompts": ["specific real artifact 1", "specific real artifact 2", "specific real artifact 3"],
+  "title": "STOP DOING TOPIC",
+  "bullets": ["bullet 1", "bullet 2", "bullet 3"],
+  "transitionText": "Look at what [practitioners] have been demanding your Respect for all this time",
+  "parenthetical": "**(This is REAL [X], done by REAL [practitioners])**:",
+  "imagePrompts": ["screenshot of X showing Y", "a Z diagram with W", "screenshot of T with U"],
   "imageLabels": ["?????", "???????", "?????????????????"],
-  "quoteLine": "\\"Hello I would like JARGON apples please\\"",
+  "quoteLine": "Hello I would like JARGON please",
   "closingLine": "They have played us for absolute fools"
 }
 
+Notes on optional fields:
+- "parenthetical" can be empty string "" if it doesn't fit
+- "bullets" can have 3-5 items
+- "quoteLine" can be any format, not just "Hello I would like"
+
 CRITICAL RULES:
 - Be genuinely funny. Use REAL jargon from the topic — the humor is insiders recognizing terms used absurdly.
-- Each bullet MUST use a different pattern (A, B, C, D). Don't repeat.
+- Each bullet should use a different pattern. Don't repeat the same pattern.
 - **Bold** goes on DOMAIN-SPECIFIC terms only, not generic words. The bolded words should make an insider laugh.
 - The voice is a confused outsider applying common sense, NOT a clever insider making observations.
 - Image prompts must describe REAL things (screenshots, diagrams, tools) not abstract concepts.`;
@@ -125,7 +130,7 @@ Return a complete updated JSON manifest with ALL fields, reflecting the requeste
 }
 
 export function generatedJsonToMarkdown(json: {
-  title: { prefix: string; subject: string };
+  title: string | { prefix: string; subject: string };
   bullets: string[];
   transitionText: string;
   parenthetical?: string;
@@ -136,7 +141,10 @@ export function generatedJsonToMarkdown(json: {
 }): string {
   const lines: string[] = [];
 
-  lines.push(`## ${json.title.prefix} ${json.title.subject}`);
+  const title = typeof json.title === 'string'
+    ? json.title
+    : `${json.title.prefix} ${json.title.subject}`;
+  lines.push(`## ${title}`);
   lines.push('');
 
   for (const bullet of json.bullets) {
