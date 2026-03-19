@@ -82,11 +82,14 @@ export default function AppShell({ editor, preview }: AppShellProps) {
     <div className="h-screen flex flex-col bg-white dark:bg-neutral-950">
       {/* Header */}
       <header className="h-12 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between px-4 shrink-0">
-        <h1 className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100 group/logo cursor-default select-none">
-          s<span className="inline-flex justify-center" style={{ width: '0.42em' }}>
-            <span className="transition-opacity duration-1000 group-hover/logo:opacity-0">t</span>
-            <span className="absolute opacity-0 transition-opacity duration-500 group-hover/logo:opacity-100">l</span>
-          </span>op<span className="text-red-500">it</span>
+        <h1 className="text-lg font-bold tracking-tight text-neutral-900 dark:text-neutral-100 group/logo cursor-default select-none flex items-center gap-1.5">
+          <img src="/favicon.svg" alt="" className="w-5 h-5" />
+          <span>
+            s<span className="inline-flex justify-center" style={{ width: '0.42em' }}>
+              <span className="transition-opacity duration-1000 group-hover/logo:opacity-0">t</span>
+              <span className="absolute opacity-0 transition-opacity duration-500 group-hover/logo:opacity-100">l</span>
+            </span>op<span className="text-red-500">it</span>
+          </span>
         </h1>
 
         <div className="flex items-center gap-1">
