@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, type ReactNode, type Dispatch } from 'react';
-import type { MemeManifest, ManifestImage } from '../types/manifest.ts';
+import type { MemeManifest, ManifestImage, MemeFilters } from '../types/manifest.ts';
 import { createDefaultManifest } from '../lib/defaults.ts';
 
 export type MemeAction =
@@ -10,6 +10,7 @@ export type MemeAction =
   | { type: 'ADD_IMAGE' }
   | { type: 'REMOVE_IMAGE'; index: number }
   | { type: 'UPDATE_CANVAS_WIDTH'; payload: number }
+  | { type: 'UPDATE_FILTERS'; payload: Partial<MemeFilters> }
   | { type: 'RESET' };
 
 function memeReducer(state: MemeManifest, action: MemeAction): MemeManifest {
@@ -37,6 +38,9 @@ function memeReducer(state: MemeManifest, action: MemeAction): MemeManifest {
 
     case 'UPDATE_CANVAS_WIDTH':
       return { ...state, canvasWidth: action.payload };
+
+    case 'UPDATE_FILTERS':
+      return { ...state, filters: { ...(state.filters ?? { jpegQuality: 100, textMessiness: 0, crustiness: 0 }), ...action.payload } };
 
     case 'RESET':
       return createDefaultManifest();

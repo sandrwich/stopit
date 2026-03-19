@@ -115,6 +115,7 @@ export async function saveSnapshot(
     version: manifest.version,
     canvasWidth: manifest.canvasWidth,
     background: { ...manifest.background },
+    filters: manifest.filters ? { ...manifest.filters } : undefined,
     content: manifest.content,
     images: snapshotImages,
   };
@@ -151,6 +152,7 @@ export async function loadSnapshot(id: string): Promise<MemeManifest | null> {
     version: record.manifest.version,
     canvasWidth: record.manifest.canvasWidth,
     background: { ...record.manifest.background },
+    filters: record.manifest.filters ? { ...record.manifest.filters } : undefined,
     content: record.manifest.content,
     images,
   };
@@ -192,6 +194,7 @@ export async function updateSnapshot(id: string, manifest: MemeManifest): Promis
     version: manifest.version,
     canvasWidth: manifest.canvasWidth,
     background: { ...manifest.background },
+    filters: manifest.filters ? { ...manifest.filters } : undefined,
     content: manifest.content,
     images: snapshotImages,
   };

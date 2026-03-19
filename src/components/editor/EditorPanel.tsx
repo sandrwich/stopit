@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useMeme } from '../../context/MemeContext.tsx';
 import Collapsible from '../shared/Collapsible.tsx';
 import ColorPicker from '../shared/ColorPicker.tsx';
@@ -8,6 +8,7 @@ import RegenerateModal from './RegenerateModal.tsx';
 import ManifestPanel from './ManifestPanel.tsx';
 import AiBar from './AiBar.tsx';
 import { Plus, Sparkles } from 'lucide-react';
+import { DEFAULT_FILTERS } from '../../types/manifest.ts';
 
 const DIRECTIONS = [
   { value: 'to top left', label: '↖ Bottom-right to Top-left' },
@@ -124,6 +125,38 @@ export default function EditorPanel() {
         </div>
       </Collapsible>
 
+      {/* Filters */}
+      <Collapsible title="Filters" defaultOpen={false}>
+        {(() => {
+          const f = manifest.filters ?? DEFAULT_FILTERS;
+          return (
+            <div className="space-y-3">
+              <FilterSlider
+                label="JPEG Quality"
+                hintFn={v => v >= 100 ? 'Lossless PNG' : `${v}% — ${v < 40 ? 'deep fried' : v < 70 ? 'crunchy' : 'mild'}`}
+                value={f.jpegQuality}
+                min={1} max={100}
+                onChange={v => dispatch({ type: 'UPDATE_FILTERS', payload: { jpegQuality: v } })}
+              />
+              <FilterSlider
+                label="Messiness"
+                hintFn={v => v === 0 ? 'Clean' : `${v}% — ${v > 60 ? 'chaotic' : v > 30 ? 'wobbly' : 'subtle'}`}
+                value={f.textMessiness}
+                min={0} max={100}
+                onChange={v => dispatch({ type: 'UPDATE_FILTERS', payload: { textMessiness: v } })}
+              />
+              <FilterSlider
+                label="Crustiness"
+                hintFn={v => v === 0 ? 'None' : `${v}% — ${v > 60 ? 'deep fried' : v > 30 ? 'toasted' : 'slight'}`}
+                value={f.crustiness}
+                min={0} max={100}
+                onChange={v => dispatch({ type: 'UPDATE_FILTERS', payload: { crustiness: v } })}
+              />
+            </div>
+          );
+        })()}
+      </Collapsible>
+
       {/* Manifest JSON */}
       <ManifestPanel />
 
@@ -140,6 +173,36 @@ export default function EditorPanel() {
           }}
         />
       )}
+    </div>
+  );
+}
+
+function FilterSlider({ label, hintFn, value, min, max, onChange }: {
+  label: string; hintFn: (v: number) => string; value: number; min: number; max: number;
+  onChange: (v: number) => void;
+}) {
+  const [local, setLocal] = useState(value);
+  const dragging = useRef(false);
+
+  // Sync from parent when not dragging
+  useEffect(() => {
+    if (!dragging.current) setLocal(value);
+  }, [value]);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <label className="text-xs font-medium text-neutral-600 dark:text-neutral-400">{label}</label>
+        <span className="text-[10px] text-neutral-400">{hintFn(local)}</span>
+      </div>
+      <input
+        type="range"
+        min={min} max={max} value={local}
+        onChange={e => { dragging.current = true; setLocal(Number(e.target.value)); }}
+        onMouseUp={() => { dragging.current = false; onChange(local); }}
+        onTouchEnd={() => { dragging.current = false; onChange(local); }}
+        className="w-full h-1.5 rounded-full appearance-none bg-neutral-200 dark:bg-neutral-700 accent-purple-500"
+      />
     </div>
   );
 }

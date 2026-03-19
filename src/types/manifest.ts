@@ -8,12 +8,30 @@ export interface MemeManifest {
     direction: string;
   };
 
+  /** Filters to make the meme look more authentic */
+  filters?: MemeFilters;
+
   /** The entire meme as markdown. Images referenced as ![label](image:0) */
   content: string;
 
   /** Images referenced by index from the markdown */
   images: ManifestImage[];
 }
+
+export interface MemeFilters {
+  /** JPEG quality on export (1-100, 100 = lossless PNG). Default 100 */
+  jpegQuality: number;
+  /** Text messiness — slight random size/position variation (0-100). Default 0 */
+  textMessiness: number;
+  /** Overall image quality degradation — blur + contrast (0-100). Default 0 */
+  crustiness: number;
+}
+
+export const DEFAULT_FILTERS: MemeFilters = {
+  jpegQuality: 100,
+  textMessiness: 70,
+  crustiness: 20,
+};
 
 export interface ManifestImage {
   src: string;
@@ -43,6 +61,7 @@ export interface SnapshotManifest {
   version: 1;
   canvasWidth: number;
   background: MemeManifest['background'];
+  filters?: MemeFilters;
   content: string;
   images: SnapshotImage[];
 }

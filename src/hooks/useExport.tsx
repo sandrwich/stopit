@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useRef, type ReactNode, type RefObject } from 'react';
-import { toPng } from 'html-to-image';
+import { toPng, toJpeg } from 'html-to-image';
+import { useMeme } from '../context/MemeContext.tsx';
 
 interface ExportContextValue {
   canvasRef: RefObject<HTMLDivElement | null>;
@@ -12,18 +13,30 @@ const ExportContext = createContext<ExportContextValue | null>(null);
 export function ExportProvider({ children }: { children: ReactNode }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState(false);
+  const { manifest } = useMeme();
 
   async function exportToPng() {
     const el = canvasRef.current;
     if (!el) return;
     setExporting(true);
     try {
-      const dataUrl = await toPng(el, {
-        pixelRatio: 2,
-        cacheBust: true,
-      });
+      const jpegQuality = manifest.filters?.jpegQuality ?? 100;
+      const useJpeg = jpegQuality < 100;
+
+      const dataUrl = useJpeg
+        ? await toJpeg(el, {
+            pixelRatio: 2,
+            cacheBust: true,
+            quality: jpegQuality / 100,
+          })
+        : await toPng(el, {
+            pixelRatio: 2,
+            cacheBust: true,
+          });
+
+      const ext = useJpeg ? 'jpg' : 'png';
       const link = document.createElement('a');
-      link.download = `stopit-meme-${Date.now()}.png`;
+      link.download = `stopit-meme-${Date.now()}.${ext}`;
       link.href = dataUrl;
       link.click();
     } finally {

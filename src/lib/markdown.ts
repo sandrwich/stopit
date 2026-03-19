@@ -1,5 +1,5 @@
 import { Marked, type Tokens, type Token } from 'marked';
-import type { ManifestImage } from '../types/manifest.ts';
+import type { ManifestImage, MemeFilters } from '../types/manifest.ts';
 
 /**
  * Renders meme markdown to inline-styled HTML for the MemeCanvas.
@@ -14,9 +14,24 @@ import type { ManifestImage } from '../types/manifest.ts';
  */
 
 
+// --- Seeded PRNG for deterministic messiness ---
+
+function createRng(seed: string): () => number {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return () => {
+    h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+    h = Math.imul(h ^ (h >>> 13), 0x45d9f3b);
+    h = h ^ (h >>> 16);
+    return (h >>> 0) / 4294967296;
+  };
+}
+
 // --- Main render function ---
 
-export function renderMemeMarkdown(markdown: string, images: ManifestImage[], canvasWidth: number): string {
+export function renderMemeMarkdown(markdown: string, images: ManifestImage[], canvasWidth: number, filters?: MemeFilters): string {
   const marked = new Marked();
   const tokens = marked.lexer(markdown);
 
@@ -67,7 +82,106 @@ export function renderMemeMarkdown(markdown: string, images: ManifestImage[], ca
     }
   }
 
-  return parts.join('');
+  let html = parts.join('');
+
+  const messiness = filters?.textMessiness ?? 0;
+  if (messiness > 0) {
+    html = applyMessiness(html, messiness / 100);
+  }
+
+  return html;
+}
+
+/** Use DOMParser to walk the rendered HTML and apply messiness transforms. */
+function applyMessiness(html: string, strength: number): string {
+  const doc = new DOMParser().parseFromString(`<div>${html}</div>`, 'text/html');
+  const root = doc.body.firstElementChild!;
+
+  const walk = (node: Node, isFormatted: boolean) => {
+    for (const child of Array.from(node.childNodes)) {
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        const el = child as HTMLElement;
+        const tag = el.tagName.toLowerCase();
+
+        // List items: random spacing and indent
+        if (tag === 'li') {
+          const text = el.textContent ?? '';
+          const rng = createRng(text);
+          const marginVar = 10 + (rng() - 0.5) * 20 * strength; // margin-bottom: varies around 10px
+          const indentVar = (rng() - 0.5) * 50 * strength; // extra indent variation
+          el.style.marginBottom = `${Math.max(0, marginVar)}px`;
+          el.style.paddingLeft = `${Math.max(0, indentVar)}px`;
+          walk(el, isFormatted);
+        }
+        // Bold/em: apply heavy wobble to the element itself
+        else if (tag === 'strong' || tag === 'em') {
+          const text = el.textContent ?? '';
+          const rng = createRng(text);
+          const sizeVar = 1 + (rng() - 0.5) * 1.2 * strength;
+          const yShift = (rng() - 0.5) * 4 * strength;
+          el.style.fontSize = `${sizeVar}em`;
+          el.style.verticalAlign = `${yShift}px`;
+          walk(el, true);
+        }
+        // Images: heavy offset like bold text
+        else if (tag === 'img') {
+          const rng = createRng(el.getAttribute('alt') || el.getAttribute('src')?.slice(-20) || 'img');
+          const shiftX = (rng() - 0.5) * 30 * strength;
+          const shiftY = (rng() - 0.5) * 20 * strength;
+          const sizeVar = 1 + (rng() - 0.5) * 0.4 * strength;
+          el.style.transform = `translate(${shiftX}px,${shiftY}px) scale(${sizeVar})`;
+        }
+        // Image cell containers (flex:1 1 0 children of the image row): offset the whole cell
+        else if (tag === 'div' && el.style.flex?.includes('1 1 0')) {
+          const rng = createRng(el.textContent ?? 'cell');
+          const shiftX = (rng() - 0.5) * 30 * strength;
+          const shiftY = (rng() - 0.5) * 20 * strength;
+          const sizeVar = 1 + (rng() - 0.5) * 0.3 * strength;
+          el.style.transform = `translate(${shiftX}px,${shiftY}px) scale(${sizeVar})`;
+          walk(el, true);
+        }
+        // Red labels (color:#cc0000 → normalized to rgb(204, 0, 0)): heavy like bold
+        else if (el.style.color.includes('204')) {
+          const text = el.textContent ?? '';
+          const rng = createRng(text);
+          const sizeVar = 1 + (rng() - 0.5) * 1.2 * strength;
+          const yShift = (rng() - 0.5) * 14 * strength;
+          const origSize = parseFloat(el.style.fontSize) || 15;
+          el.style.fontSize = `${origSize * sizeVar}px`;
+          el.style.position = 'relative';
+          el.style.top = `${yShift}px`;
+          walk(el, true);
+        }
+        // Image placeholder divs (the gray boxes): heavy offset
+        else if (tag === 'div' && el.style.background.includes('0, 0, 0')) {
+          const rng = createRng(el.textContent ?? 'placeholder');
+          const shiftX = (rng() - 0.5) * 30 * strength;
+          const shiftY = (rng() - 0.5) * 20 * strength;
+          const sizeVar = 1 + (rng() - 0.5) * 0.4 * strength;
+          el.style.transform = `translate(${shiftX}px,${shiftY}px) scale(${sizeVar})`;
+        }
+        else {
+          walk(el, isFormatted);
+        }
+      }
+      // Text nodes not inside bold/em: subtle variation
+      else if (child.nodeType === Node.TEXT_NODE && !isFormatted) {
+        const text = child.textContent?.trim();
+        if (!text) continue;
+        const rng = createRng(text);
+        const sizeVar = 1 + (rng() - 0.5) * 0.15 * strength;
+        const yShift = (rng() - 0.5) * 2 * strength;
+        const span = doc.createElement('span');
+        span.style.fontSize = `${sizeVar}em`;
+        span.style.verticalAlign = `${yShift}px`;
+        span.textContent = child.textContent;
+        child.parentNode?.replaceChild(span, child);
+      }
+    }
+  };
+
+  walk(root, false);
+  return root.innerHTML;
 }
 
 // --- Block renderers ---

@@ -11,9 +11,15 @@ interface MemeCanvasProps {
  * This div is captured by html-to-image for PNG export.
  */
 const MemeCanvas = forwardRef<HTMLDivElement, MemeCanvasProps>(({ manifest }, ref) => {
-  const { canvasWidth, background, content, images } = manifest;
+  const { canvasWidth, background, content, images, filters } = manifest;
   const bgGradient = `linear-gradient(${background.direction}, ${background.from}, ${background.to})`;
-  const html = renderMemeMarkdown(content, images, canvasWidth);
+  const html = renderMemeMarkdown(content, images, canvasWidth, filters);
+
+  // Crustiness: blur + contrast + saturation boost
+  const crustiness = filters?.crustiness ?? 0;
+  const cssFilter = crustiness > 0
+    ? `blur(${crustiness * 0.008}px) contrast(${1 + crustiness * 0.005}) saturate(${1 + crustiness * 0.008})`
+    : undefined;
 
   return (
     <div
@@ -26,6 +32,7 @@ const MemeCanvas = forwardRef<HTMLDivElement, MemeCanvasProps>(({ manifest }, re
         padding: '40px 50px',
         boxSizing: 'border-box',
         lineHeight: 1.4,
+        filter: cssFilter,
       }}
       dangerouslySetInnerHTML={{ __html: html }}
     />
