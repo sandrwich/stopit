@@ -7,8 +7,8 @@ Use markdown **bold** ONLY on topic-specific jargon that insiders would recogniz
 ### 1. Title
 "STOP DOING [TOPIC]" or "STOP USING [TOPIC]" in ALL CAPS.
 
-### 2. Bullet Points (4)
-Each bullet uses a DIFFERENT pattern. Keep them punchy — Pattern A should be ~1 line, others can be 1-2 lines max. Pattern D can be longest (2-3 lines) since it strings jargon together.
+### 2. Bullet Points (3-5)
+Each bullet uses a DIFFERENT pattern. You don't have to use all patterns — pick the ones that are funniest for the topic. Keep them punchy — Pattern A should be ~1 line, others can be 1-2 lines max. Pattern D can be longest (2-3 lines) since it strings jargon together.
 
 **Pattern A — short declarative absurdity (1 line)**
 - "NUMBERS WERE NOT SUPPOSED TO BE GIVEN NAMES"
@@ -36,16 +36,18 @@ String together REAL commands, syntax, or terminology that sounds insane to outs
 - '"Yes please give me **ZERO** of something. Please give me **INFINITY** of it" - Statements dreamed up by the utterly Deranged'
 
 ### 3. Transition Text
-"LOOK at what [practitioners] have been demanding your Respect for all this time, with all the [simple things we gave them] we built for them"
-The [simple things] should be something we generously provided that they're now "abusing":
-- "compilers & **side effects** we built for them"
-- "calculators & abacus we built for them"
-- "**hardware** we built for them"
+"LOOK at what [practitioners] have been demanding your Respect for all this time"
+Can optionally add "with all the [things] we built for them":
+- "Look at what **Rust developers** have been demanding your respect for all this time"
+- "LOOK at what **Mathematicians** have been demanding your Respect for all this time, with all the **calculators & abacus** we built for them"
+- "LOOK at what **corporations** have been demanding your Respect for all this time with all the **labor** we have given them"
 
-### 4. Parenthetical
+### 4. Parenthetical (optional — skip if it doesn't fit)
 Bold and sarcastic: "**(This is REAL [X], done by REAL [practitioners]):**"
 - "**(This is REAL Math, done by REAL Mathematicians)**:"
 - "**(This is REAL templates, done by REAL code monkeys)**:"
+- "**(These are REAL FURNISHINGS found in REAL OFFICES)**:"
+Some memes skip this entirely — only include it if it adds to the humor.
 
 ### 5. Image Descriptions (3)
 Describe REAL, SPECIFIC artifacts from the topic that look absurd to outsiders. NOT abstract concepts.
@@ -66,17 +68,17 @@ Use escalating question marks: "?????", "???????", "?????????????????"
 This is the most common style in real memes. Only use funny descriptions if truly obvious.
 
 ### 7. Quote Line
-Always starts with "Hello I would like" then uses topic jargon in an absurd mundane request.
-Very flexible — can be ordering something, requesting a service, or making an existential statement.
+Usually starts with "Hello I would like" but doesn't have to. Uses topic jargon in an absurd mundane request. Very flexible format.
 Real examples from actual memes:
 - '"Hello I would like **None** apples please"' (Python)
 - '"Hello I would like to **connect()**"' (Networking)
 - '"Hello I would like to hear half of your **Zoom call**"' (Offices)
 - '"Hello I would like **optimal** apples please"' (Fighting games)
-- '"Hello I would like to do a job so I can keep living."' (Work/Doing)
-- '"Hello I would like **Anthro K** apples please"' (Debate)
+- '"Hello I would like to do a job so I can keep living."' (Work)
 - '"HELLO YES I WOULD LIKE TO DOWNLOAD THE CONCEPT OF LOVE INTO A **.NPZ FILE.**"' (ML)
-The jargon should be REAL terminology from the topic. "apples" is optional, not required.
+- '"پښتو pronouns ქართული 我你他她我們"' (Linguistics — no "hello" at all, just raw jargon dump)
+- '"Hello I\'m **.try_into().unwrap()** your hearth :^3"' (Rust — pickup line using jargon)
+The jargon should be REAL terminology from the topic. "Hello I would like" is the default but you can break the format entirely if something funnier fits.
 
 ### 8. Closing Line
 EXACTLY this format, max 10 words. Just customize who did it:
