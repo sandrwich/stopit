@@ -6,11 +6,9 @@ import {
   listsPlugin,
   quotePlugin,
   thematicBreakPlugin,
-  markdownShortcutPlugin,
   toolbarPlugin,
   diffSourcePlugin,
   codeBlockPlugin,
-  codeMirrorPlugin,
   imagePlugin,
   linkPlugin,
   BoldItalicUnderlineToggles,
@@ -103,21 +101,6 @@ export default function ContentEditor({ markdown, onChange, imageCount }: Conten
           disableImageSettingsButton: true,
         }),
         codeBlockPlugin({ defaultCodeBlockLanguage: '' }),
-        codeMirrorPlugin({
-          codeBlockLanguages: {
-            '': 'Plain',
-            js: 'JavaScript',
-            ts: 'TypeScript',
-            py: 'Python',
-            c: 'C',
-            cpp: 'C++',
-            java: 'Java',
-            go: 'Go',
-            rust: 'Rust',
-            haskell: 'Haskell',
-          },
-        }),
-        markdownShortcutPlugin(),
         diffSourcePlugin({ viewMode: 'rich-text' }),
         toolbarPlugin({
           toolbarContents: () => (
