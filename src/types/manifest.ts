@@ -28,7 +28,7 @@ export interface MemeFilters {
 }
 
 export const DEFAULT_FILTERS: MemeFilters = {
-  jpegQuality: 100,
+  jpegQuality: 50,
   textMessiness: 70,
   crustiness: 20,
 };

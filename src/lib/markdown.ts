@@ -31,7 +31,7 @@ function createRng(seed: string): () => number {
 
 // --- Main render function ---
 
-export function renderMemeMarkdown(markdown: string, images: ManifestImage[], canvasWidth: number, filters?: MemeFilters): string {
+export function renderMemeMarkdown(markdown: string, images: ManifestImage[], canvasWidth: number, filters?: MemeFilters, background?: { from: string; to: string }): string {
   const marked = new Marked();
   const tokens = marked.lexer(markdown);
 
@@ -86,16 +86,34 @@ export function renderMemeMarkdown(markdown: string, images: ManifestImage[], ca
 
   const messiness = filters?.textMessiness ?? 0;
   if (messiness > 0) {
-    html = applyMessiness(html, messiness / 100);
+    const jpegQ = filters?.jpegQuality ?? 100;
+    const bgMid = jpegQ <= 50 && background ? averageHexColors(background.from, background.to) : undefined;
+    html = applyMessiness(html, messiness / 100, jpegQ, bgMid);
   }
 
   return html;
 }
 
+const PASTE_FONTS = [
+  'Arial, sans-serif',
+  '"Times New Roman", serif',
+  'Georgia, serif',
+  'Verdana, sans-serif',
+  'Impact, sans-serif',
+  '"Trebuchet MS", sans-serif',
+  '"Courier New", monospace',
+  '"Comic Sans MS", cursive',
+];
+
 /** Use DOMParser to walk the rendered HTML and apply messiness transforms. */
-function applyMessiness(html: string, strength: number): string {
+function applyMessiness(html: string, strength: number, jpegQuality = 100, bgPatchColor?: string): string {
   const doc = new DOMParser().parseFromString(`<div>${html}</div>`, 'text/html');
   const root = doc.body.firstElementChild!;
+  const showPatches = jpegQuality <= 50 && bgPatchColor;
+
+  // Pick one "pasted-in" font for all bold text in this meme
+  const globalRng = createRng(html.slice(0, 100));
+  const pasteFont = PASTE_FONTS[Math.floor(globalRng() * PASTE_FONTS.length)];
 
   const walk = (node: Node, isFormatted: boolean) => {
     for (const child of Array.from(node.childNodes)) {
@@ -107,20 +125,36 @@ function applyMessiness(html: string, strength: number): string {
         if (tag === 'li') {
           const text = el.textContent ?? '';
           const rng = createRng(text);
-          const marginVar = 10 + (rng() - 0.5) * 20 * strength; // margin-bottom: varies around 10px
-          const indentVar = (rng() - 0.5) * 50 * strength; // extra indent variation
+          const marginVar = 10 + (rng() - 0.5) * 20 * strength;
+          const indentVar = (rng() - 0.5) * 50 * strength;
           el.style.marginBottom = `${Math.max(0, marginVar)}px`;
           el.style.paddingLeft = `${Math.max(0, indentVar)}px`;
           walk(el, isFormatted);
         }
-        // Bold/em: apply heavy wobble to the element itself
+        // Bold/em: heavy wobble + random font + optional bg patch
         else if (tag === 'strong' || tag === 'em') {
           const text = el.textContent ?? '';
           const rng = createRng(text);
-          const sizeVar = 1 + (rng() - 0.5) * 1.2 * strength;
+          const raw = (rng() - 0.5) * 2; // -1 to 1
+          const sizeVar = 1 + (raw > 0 ? raw * 0.6 : raw * 0.3) * strength;
           const yShift = (rng() - 0.5) * 4 * strength;
           el.style.fontSize = `${sizeVar}em`;
           el.style.verticalAlign = `${yShift}px`;
+          // Use the "pasted-in" font (same for all bold text in this meme)
+          if (rng() < strength * 0.7) {
+            el.style.fontFamily = pasteFont;
+          }
+          // Solid background patch at low JPEG quality — mismatched padding
+          // Smaller text = proportionally bigger padding (box stays big)
+          if (showPatches && rng() < 0.6) {
+            el.style.backgroundColor = bgPatchColor!;
+            const vPadScale = sizeVar < 1 ? 1 + (1 - sizeVar) * 3 : 1;
+            const pt = Math.round(rng() * 4 * vPadScale);
+            const pr = Math.round(1 + rng() * 8);
+            const pb = Math.round(rng() * 6 * vPadScale);
+            const pl = Math.round(1 + rng() * 8);
+            el.style.padding = `${pt}px ${pr}px ${pb}px ${pl}px`;
+          }
           walk(el, true);
         }
         // Images: heavy offset like bold text
@@ -315,4 +349,24 @@ function escapeHtml(text: string): string {
 
 function esc(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
+/** Average two hex colors and push toward white for a "patched over" look. */
+function averageHexColors(a: string, b: string): string {
+  const parse = (hex: string) => {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  };
+  try {
+    const [r1, g1, b1] = parse(a);
+    const [r2, g2, b2] = parse(b);
+    // Average then push 80% toward white
+    const boost = (x: number, y: number) => {
+      const mid = (x + y) / 2;
+      return Math.round(mid + (255 - mid) * 0.5).toString(16).padStart(2, '0');
+    };
+    return `#${boost(r1, r2)}${boost(g1, g2)}${boost(b1, b2)}`;
+  } catch {
+    return '#f0f0f0';
+  }
 }

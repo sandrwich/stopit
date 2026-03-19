@@ -13,7 +13,7 @@ interface MemeCanvasProps {
 const MemeCanvas = forwardRef<HTMLDivElement, MemeCanvasProps>(({ manifest }, ref) => {
   const { canvasWidth, background, content, images, filters } = manifest;
   const bgGradient = `linear-gradient(${background.direction}, ${background.from}, ${background.to})`;
-  const html = renderMemeMarkdown(content, images, canvasWidth, filters);
+  const html = renderMemeMarkdown(content, images, canvasWidth, filters, background);
 
   // Crustiness: blur + contrast + saturation boost
   const crustiness = filters?.crustiness ?? 0;
