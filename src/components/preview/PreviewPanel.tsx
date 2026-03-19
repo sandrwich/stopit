@@ -69,11 +69,16 @@ export default function PreviewPanel() {
 
     const timeout = setTimeout(async () => {
       try {
-        // First render to PNG at 1x
         const { toPng } = await import('html-to-image');
-        const pngUrl = await toPng(el, { pixelRatio: 1, cacheBust: true });
+        const q = jpegQuality / 100;
 
-        // Load into an image, draw to canvas as JPEG to get real compression artifacts
+        // Render to PNG first, then crush through canvas JPEG
+        const pngUrl = await toPng(el, {
+          pixelRatio: 1,
+          cacheBust: true,
+          skipFonts: true, // avoid CORS issues with Google Fonts on Firefox
+        });
+
         const img = new Image();
         img.src = pngUrl;
         await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = rej; });
@@ -82,21 +87,22 @@ export default function PreviewPanel() {
         c.width = img.width;
         c.height = img.height;
         const ctx = c.getContext('2d')!;
-        ctx.drawImage(img, 0, 0);
 
-        // Multiple compression passes for lower quality = more visible artifacts
-        const q = jpegQuality / 100;
-        let result = c.toDataURL('image/jpeg', q);
-        if (jpegQuality < 50) {
-          // Double compress for extra crunch
-          const img2 = new Image();
-          img2.src = result;
-          await new Promise<void>((res, rej) => { img2.onload = () => res(); img2.onerror = rej; });
-          ctx.drawImage(img2, 0, 0);
-          result = c.toDataURL('image/jpeg', q);
+        // Multiple compression passes for more visible artifacts
+        const passes = jpegQuality < 30 ? 3 : jpegQuality < 50 ? 2 : 1;
+        let current: HTMLImageElement | HTMLCanvasElement = img;
+        for (let i = 0; i < passes; i++) {
+          ctx.drawImage(current, 0, 0);
+          const jpegUrl = c.toDataURL('image/jpeg', q);
+          if (i < passes - 1) {
+            const next = new Image();
+            next.src = jpegUrl;
+            await new Promise<void>((res, rej) => { next.onload = () => res(); next.onerror = rej; });
+            current = next;
+          } else {
+            setJpegOverlay(jpegUrl);
+          }
         }
-
-        setJpegOverlay(result);
       } catch {
         setJpegOverlay(null);
       }

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useRef, type ReactNode, type RefObject } from 'react';
-import { toPng, toJpeg } from 'html-to-image';
+import { toPng } from 'html-to-image';
 import { useMeme } from '../context/MemeContext.tsx';
 
 interface ExportContextValue {
@@ -23,16 +23,38 @@ export function ExportProvider({ children }: { children: ReactNode }) {
       const jpegQuality = manifest.filters?.jpegQuality ?? 100;
       const useJpeg = jpegQuality < 100;
 
-      const dataUrl = useJpeg
-        ? await toJpeg(el, {
-            pixelRatio: 2,
-            cacheBust: true,
-            quality: jpegQuality / 100,
-          })
-        : await toPng(el, {
-            pixelRatio: 2,
-            cacheBust: true,
-          });
+      const opts = { pixelRatio: 2, cacheBust: true, skipFonts: true };
+      let dataUrl: string;
+
+      if (useJpeg) {
+        // Render to PNG first, then crush through canvas for real JPEG artifacts
+        const pngUrl = await toPng(el, opts);
+        const img = new Image();
+        img.src = pngUrl;
+        await new Promise<void>((res, rej) => { img.onload = () => res(); img.onerror = rej; });
+        const c = document.createElement('canvas');
+        c.width = img.width;
+        c.height = img.height;
+        const ctx = c.getContext('2d')!;
+        const q = jpegQuality / 100;
+        const passes = jpegQuality < 30 ? 3 : jpegQuality < 50 ? 2 : 1;
+        let current: HTMLImageElement | HTMLCanvasElement = img;
+        for (let i = 0; i < passes; i++) {
+          ctx.drawImage(current, 0, 0);
+          const jpegUrl = c.toDataURL('image/jpeg', q);
+          if (i < passes - 1) {
+            const next = new Image();
+            next.src = jpegUrl;
+            await new Promise<void>((res, rej) => { next.onload = () => res(); next.onerror = rej; });
+            current = next;
+          } else {
+            dataUrl = jpegUrl;
+          }
+        }
+        dataUrl ??= c.toDataURL('image/jpeg', q);
+      } else {
+        dataUrl = await toPng(el, opts);
+      }
 
       const ext = useJpeg ? 'jpg' : 'png';
       const link = document.createElement('a');
