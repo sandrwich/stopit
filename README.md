@@ -63,7 +63,7 @@ The "STOP DOING X" meme follows a specific structure:
 3. **Transition text** — "LOOK at what [practitioners] have been demanding..."
 4. **Parenthetical** — "(This is REAL [X], done by REAL [practitioners]):"
 5. **Three images** with labels (usually escalating "?????")
-6. **Quote line** — "Hello I would like [jargon] apples please"
+6. **Quote line** — "Hello I would like [jargon] please"
 7. **Closing line** — "They have played us for absolute fools" (auto-bolded)
 
 ## License

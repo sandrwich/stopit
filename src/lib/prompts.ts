@@ -66,12 +66,17 @@ Use escalating question marks: "?????", "???????", "?????????????????"
 This is the most common style in real memes. Only use funny descriptions if truly obvious.
 
 ### 7. Quote Line
-'"Hello I would like [ONE JARGON TERM] apples please"'
-Keep it SHORT. Use ONE real keyword/value/type from the topic that sounds absurd as a quantity:
+Always starts with "Hello I would like" then uses topic jargon in an absurd mundane request.
+Very flexible — can be ordering something, requesting a service, or making an existential statement.
+Real examples from actual memes:
 - '"Hello I would like **None** apples please"' (Python)
-- '"Hello I would like **SIGSEGV** apples please"' (C++)
-- '"Hello I would like **e4** of something please"' (Chess)
-- '"Hello I would like **NaN** apples please"' (JavaScript)
+- '"Hello I would like to **connect()**"' (Networking)
+- '"Hello I would like to hear half of your **Zoom call**"' (Offices)
+- '"Hello I would like **optimal** apples please"' (Fighting games)
+- '"Hello I would like to do a job so I can keep living."' (Work/Doing)
+- '"Hello I would like **Anthro K** apples please"' (Debate)
+- '"HELLO YES I WOULD LIKE TO DOWNLOAD THE CONCEPT OF LOVE INTO A **.NPZ FILE.**"' (ML)
+The jargon should be REAL terminology from the topic. "apples" is optional, not required.
 
 ### 8. Closing Line
 EXACTLY this format, max 10 words. Just customize who did it:
