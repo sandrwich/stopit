@@ -1,0 +1,251 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+/* ═══════════════════════════════════════
+   MDXEditor – Light mode (default)
+   ═══════════════════════════════════════ */
+
+.mdx-editor-meme {
+  border: 1px solid #d4d4d4;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+/* ── Toolbar ── */
+
+.mdx-editor-meme [role="toolbar"] {
+  background: #fafafa;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 3px 6px;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.mdx-editor-meme [role="toolbar"] button,
+.mdx-editor-meme [role="toolbar"] [role="radio"] {
+  font-size: 12px;
+  color: #525252;
+}
+
+.mdx-editor-meme [role="toolbar"] svg {
+  color: #525252;
+}
+
+/* Block type combobox */
+.mdx-editor-meme [role="toolbar"] [role="combobox"] {
+  font-size: 12px;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  color: #333;
+  padding: 2px 8px;
+}
+
+/* ── Content area ── */
+
+.mdx-editor-meme .mdxeditor-root-contenteditable {
+  padding: 10px 14px;
+  min-height: 200px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #171717;
+  background: #fff;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable h1 {
+  font-size: 18px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0 0 8px 0;
+  line-height: 1.15;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable h2 {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable h3 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 5px 0;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable ul,
+.mdx-editor-meme .mdxeditor-root-contenteditable ol {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable li {
+  margin-bottom: 4px;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable code {
+  background: #f0f0f0 !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  font-family: 'Consolas', 'Fira Code', monospace !important;
+  font-size: 0.9em !important;
+  color: #171717 !important;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable strong {
+  font-weight: 900;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable p {
+  margin: 0 0 8px 0;
+}
+
+.mdx-editor-meme .mdxeditor-root-contenteditable blockquote {
+  border-left: 3px solid #d4d4d4;
+  padding-left: 12px;
+  margin: 8px 0;
+  color: #666;
+  font-style: italic;
+}
+
+/* image:N placeholders — replace broken SVG error with a styled chip */
+.mdx-editor-meme [data-editor-block-type="image"] {
+  display: inline-block !important;
+  background: #e8f0fe;
+  border: 1px solid #b3d4fc;
+  border-radius: 5px;
+  padding: 2px 10px;
+  margin: 3px 2px;
+  vertical-align: middle;
+}
+
+.mdx-editor-meme [data-editor-block-type="image"] > div {
+  display: inline !important;
+}
+
+/* Fully hide the error image and toolbars */
+.mdx-editor-meme [data-editor-block-type="image"] img,
+.mdx-editor-meme [data-editor-block-type="image"] button {
+  display: none !important;
+}
+
+/* Show alt text as the chip label via inserted content using JS (see ContentEditor) */
+
+/* Source/diff mode */
+.mdx-editor-meme .cm-editor {
+  font-size: 13px;
+  min-height: 280px;
+}
+
+
+/* ═══════════════════════════════════════
+   MDXEditor – Dark mode
+   ═══════════════════════════════════════ */
+
+@media (prefers-color-scheme: dark) {
+  .mdx-editor-meme {
+    border-color: #404040;
+  }
+
+  /* ── Toolbar ── */
+
+  .mdx-editor-meme [role="toolbar"] {
+    background: #1a1a1a;
+    border-bottom-color: #333;
+  }
+
+  .mdx-editor-meme [role="toolbar"] button,
+  .mdx-editor-meme [role="toolbar"] [role="radio"] {
+    color: #a3a3a3;
+  }
+
+  .mdx-editor-meme [role="toolbar"] svg {
+    color: #a3a3a3;
+  }
+
+  .mdx-editor-meme [role="toolbar"] button:hover,
+  .mdx-editor-meme [role="toolbar"] [role="radio"]:hover {
+    background: #2a2a2a;
+    color: #e5e5e5;
+  }
+
+  .mdx-editor-meme [role="toolbar"] [data-state="on"],
+  .mdx-editor-meme [role="toolbar"] [aria-checked="true"] {
+    background: #333;
+    color: #e5e5e5;
+  }
+
+  .mdx-editor-meme [role="toolbar"] [role="combobox"] {
+    background: #262626;
+    border-color: #404040;
+    color: #d4d4d4;
+  }
+
+  /* ── Content area ── */
+
+  .mdx-editor-meme .mdxeditor-root-contenteditable {
+    color: #e5e5e5;
+    background: #141414;
+  }
+
+  .mdx-editor-meme .mdxeditor-root-contenteditable code {
+    background: #333 !important;
+    color: #e5e5e5 !important;
+    border: 1px solid #444 !important;
+  }
+
+  /* CodeMirror code blocks in the editor */
+  .mdx-editor-meme .cm-editor,
+  .mdx-editor-meme [class*="codeBlockEditor"] {
+    background: #1a1a1a !important;
+  }
+
+  .mdx-editor-meme .mdxeditor-root-contenteditable blockquote {
+    border-left-color: #404040;
+    color: #999;
+  }
+
+  /* image:N placeholders */
+  .mdx-editor-meme [data-editor-block-type="image"] {
+    background: #1e2a3a;
+    border-color: #2a4a6a;
+  }
+
+  .mdx-editor-meme [data-editor-block-type="image"] .img-ref-label {
+    color: #6ea8fe !important;
+  }
+
+  /* ── Source mode (CodeMirror) ── */
+
+  .mdx-editor-meme .cm-editor {
+    background: #141414;
+  }
+
+  .mdx-editor-meme .cm-editor .cm-content {
+    color: #e5e5e5;
+  }
+
+  .mdx-editor-meme .cm-editor .cm-gutters {
+    background: #1a1a1a;
+    border-color: #333;
+    color: #666;
+  }
+
+  .mdx-editor-meme .cm-editor .cm-activeLine {
+    background: #1e1e1e;
+  }
+
+  .mdx-editor-meme .cm-editor .cm-cursor {
+    border-left-color: #e5e5e5;
+  }
+
+  /* ── Popover / dropdown menus ── */
+  .mdx-editor-meme [data-radix-popper-content-wrapper] > div {
+    background: #1c1c1c !important;
+    border-color: #404040 !important;
+    color: #e5e5e5 !important;
+  }
+}
