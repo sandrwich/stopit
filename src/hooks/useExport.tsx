@@ -23,7 +23,7 @@ export function ExportProvider({ children }: { children: ReactNode }) {
       const jpegQuality = manifest.filters?.jpegQuality ?? 100;
       const useJpeg = jpegQuality < 100;
 
-      const opts = { pixelRatio: 2, cacheBust: true, skipFonts: true };
+      const opts = { pixelRatio: 2, cacheBust: true };
       let dataUrl: string;
 
       if (useJpeg) {

@@ -76,7 +76,6 @@ export default function PreviewPanel() {
         const pngUrl = await toPng(el, {
           pixelRatio: 1,
           cacheBust: true,
-          skipFonts: true, // avoid CORS issues with Google Fonts on Firefox
         });
 
         const img = new Image();
