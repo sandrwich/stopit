@@ -48,7 +48,7 @@ export async function chatCompletion(
           'Authorization': `Bearer ${config.apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': window.location.origin,
-          'X-Title': 'stopit meme builder',
+          'X-Title': 'stopit',
         },
         body: JSON.stringify({
           model: config.textModel,
@@ -92,7 +92,7 @@ export async function generateImage(
       'Authorization': `Bearer ${config.apiKey}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': window.location.origin,
-      'X-Title': 'stopit meme builder',
+      'X-Title': 'stopit',
     },
     body: JSON.stringify({
       model: config.imageModel,

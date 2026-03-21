@@ -10,7 +10,7 @@ interface SettingsDialogProps {
 }
 
 export default function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
-  const { settings, updateSettings, resetSettings } = useSettings();
+  const { settings, updateSettings, resetSettings, connectOpenRouter } = useSettings();
   const [showKey, setShowKey] = useState(false);
 
   if (!isOpen) return null;
@@ -47,9 +47,15 @@ export default function SettingsDialog({ isOpen, onClose }: SettingsDialogProps)
                 {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
-            <p className="mt-1 text-xs text-neutral-400 dark:text-neutral-500">
-              Get a key at <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-blue-500 underline">openrouter.ai/keys</a>. Stored in localStorage only.
-            </p>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                onClick={connectOpenRouter}
+                className="px-3 py-1.5 text-xs font-medium rounded-md bg-purple-500 text-white hover:bg-purple-600"
+              >
+                Connect with OpenRouter
+              </button>
+              <span className="text-xs text-neutral-400">or paste a key from <a href="https://openrouter.ai/keys" target="_blank" rel="noreferrer" className="text-blue-500 underline">openrouter.ai/keys</a></span>
+            </div>
           </div>
 
           {/* Text model */}

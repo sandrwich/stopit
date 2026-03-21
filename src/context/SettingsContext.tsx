@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { handleOAuthCallback, startOAuth } from '../lib/oauth.ts';
 
 export interface AppSettings {
   openRouterApiKey: string;
@@ -26,6 +27,7 @@ interface SettingsContextValue {
   settings: AppSettings;
   updateSettings: (partial: Partial<AppSettings>) => void;
   resetSettings: () => void;
+  connectOpenRouter: () => void;
   hasApiKey: boolean;
 }
 
@@ -46,8 +48,20 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setSettings({ ...DEFAULTS });
   }
 
+  const connectOpenRouter = useCallback(() => {
+    startOAuth();
+  }, []);
+
+  // Handle OAuth callback on mount
+  useEffect(() => {
+    handleOAuthCallback().then(key => {
+      if (key) updateSettings({ openRouterApiKey: key });
+    }).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <SettingsContext.Provider value={{ settings, updateSettings, resetSettings, hasApiKey: !!settings.openRouterApiKey }}>
+    <SettingsContext.Provider value={{ settings, updateSettings, resetSettings, connectOpenRouter, hasApiKey: !!settings.openRouterApiKey }}>
       {children}
     </SettingsContext.Provider>
   );

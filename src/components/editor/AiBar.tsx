@@ -19,7 +19,7 @@ function parseJsonResponse(raw: string): unknown {
 type Phase = 'idle' | 'generating-text' | 'generating-images' | 'refining' | 'error';
 
 export default function AiBar() {
-  const { settings, hasApiKey } = useSettings();
+  const { settings, hasApiKey, connectOpenRouter } = useSettings();
   const { manifest, dispatch } = useMeme();
   const { refreshSnapshots, refreshImages } = useHistory();
 
@@ -32,11 +32,17 @@ export default function AiBar() {
 
   if (!hasApiKey) {
     return (
-      <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50">
-        <p className="text-xs text-neutral-400 flex items-center gap-1.5">
+      <div className="px-4 py-3 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 flex items-center gap-3">
+        <p className="text-xs text-neutral-400 flex items-center gap-1.5 flex-1">
           <Sparkles size={13} />
-          Set your OpenRouter API key in Settings to enable AI generation.
+          Connect OpenRouter to enable AI generation.
         </p>
+        <button
+          onClick={connectOpenRouter}
+          className="px-3 py-1.5 text-xs font-medium rounded-md bg-purple-500 text-white hover:bg-purple-600 shrink-0"
+        >
+          Connect OpenRouter
+        </button>
       </div>
     );
   }
